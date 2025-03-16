@@ -1,0 +1,3 @@
+/Users/chankokwai/Desktop/CRUD/cmake-build-debug/CMakeFiles/CRUD.dir
+/Users/chankokwai/Desktop/CRUD/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/chankokwai/Desktop/CRUD/cmake-build-debug/CMakeFiles/rebuild_cache.dir
