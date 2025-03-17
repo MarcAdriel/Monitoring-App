@@ -27,12 +27,11 @@ Database::~Database()
     }
 }
 
-void Database::CreateUser(const string &name, int age)
+void Database::CreateUser(const User &user)
 {
-    work txn( *m_conn );
-    txn.exec(
-            "INSERT INTO users (name, age) VALUES (" + txn.quote(name) + "," + txn.quote(age) + ")"
-            );
+    work txn(*m_conn);
+    txn.exec_params("INSERT INTO users (firstname, lastname, email, password, role) VALUES ($1, $2, $3, $4, $5)",
+                    user.GetFirstname(), user.GetLastname(), user.GetEmail(), user.GetPassword(), user.GetRole());
     txn.commit();
 }
 
@@ -52,13 +51,19 @@ result Database::GetUserById( int id )
             );
 }
 
-void Database::UpdateUser( int id, const string &name, int age )
+void Database::UpdateUser(int id, const string &firstname, const string &lastname, const string &email)
 {
-    work txn( *m_conn );
-    txn.exec(
-            "UPDATE users SET name = " + txn.quote(name) + ", age = " + txn.quote(age) + "WHERE id = " + txn.quote(id)
-            );
-    txn.commit();
+    try
+    {
+        work txn(*m_conn);
+        txn.exec_params("UPDATE users SET firstname = $1, lastname = $2, email = $3 WHERE id = $4",
+                        firstname, lastname, email, id);
+        txn.commit();
+    }
+    catch (const exception &e)
+    {
+        cerr << "Error updating user: " << e.what() << endl;
+    }
 }
 
 void Database::DeleteUser( int id )
@@ -68,4 +73,9 @@ void Database::DeleteUser( int id )
             "DELETE FROM users WHERE id = " + txn.quote(id)
             );
     txn.commit();
+}
+
+result Database::GetUserByEmail(const std::string &email) {
+    work txn(*m_conn);
+    return txn.exec_params("SELECT * FROM users WHERE email = $1", email);
 }

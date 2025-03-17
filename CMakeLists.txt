@@ -12,9 +12,13 @@ include_directories(${PQXX_INCLUDE_DIRS})
 link_directories(${PQXX_LIBRARY_DIRS})
 add_definitions(${PQXX_CFLAGS_OTHER})
 
-# Manually set Pistache include and library paths
 include_directories(/opt/homebrew/include)
 link_directories(/opt/homebrew/lib /opt/homebrew/Cellar/libpq/16.1/lib)
+
+find_package(OpenSSL REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
+
+include_directories(${CMAKE_SOURCE_DIR}/third_party/jwt-cpp/include)
 
 add_executable(
         CRUD
@@ -23,6 +27,11 @@ add_executable(
         src/Include/Database.cpp
         src/Header/Server.h
         src/Include/Server.cpp
+        src/Header/User.h
+        src/Include/User.cpp
+        src/Header/JwtUtil.h
+        src/Include/JwtUtil.cpp
 )
 
-target_link_libraries(CRUD ${PQXX_LIBRARIES} pqxx pq pistache)
+# Link libraries
+target_link_libraries(CRUD ${PQXX_LIBRARIES} pqxx pq pistache OpenSSL::Crypto)

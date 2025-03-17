@@ -6,6 +6,8 @@
 #include <pqxx/pqxx>
 #include <string>
 
+#include "User.h"
+
 using namespace std;
 using namespace pqxx;
 
@@ -15,11 +17,14 @@ public:
     Database();
     ~Database();
 
-    void CreateUser( const string &name, int age );
+    void CreateUser( const User &user );
     result GetUsers();
     result GetUserById( int id );
-    void UpdateUser( int id, const string &name, int age );
+    void UpdateUser(int id, const string &firstname, const string &lastname, const string &email);
     void DeleteUser( int id );
+
+    result GetUserByEmail( const string &email );
+
 private:
     pqxx::connection *m_conn;
 };

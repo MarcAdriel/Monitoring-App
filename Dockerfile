@@ -7,7 +7,7 @@ WORKDIR /app
 # Install dependencies (including nlohmann-json3-dev)
 RUN apt-get update && apt-get install -y \
     g++ libpqxx-dev libpq-dev pkg-config git curl libcurl4-openssl-dev meson python3-pip \
-    nlohmann-json3-dev \
+    nlohmann-json3-dev libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Ninja using pip (fix for ARM64)
@@ -30,6 +30,15 @@ RUN git clone https://github.com/pistacheio/pistache.git \
     && ninja -C build \
     && ninja -C build install \
     && cd .. && rm -rf pistache  # Clean up
+
+# Install jwt-cpp and picojson manually
+RUN mkdir -p /app/third_party && \
+    git clone https://github.com/Thalhammer/jwt-cpp.git /app/third_party/jwt-cpp && \
+    git clone https://github.com/kazuho/picojson.git /app/third_party/picojson
+
+# Ensure picojson is included in the include path
+RUN mkdir -p /usr/include/picojson && \
+    cp /app/third_party/picojson/picojson.h /usr/include/picojson/
 
 # Copy all project files
 COPY . .

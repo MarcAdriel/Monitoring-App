@@ -8,6 +8,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "Database.h"
+#include "JwtUtil.h"
 
 using namespace Pistache;
 using json = nlohmann::json;
@@ -18,14 +19,21 @@ class Server {
 public:
     explicit Server(Pistache::Address addr);
     void start();
+    void shutdown();
 
 private:
     void setupRoutes();
-    void handleCreateUser(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response);
-    void handleGetUsers(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response);
+    void handleRegister(const Rest::Request &request, Http::ResponseWriter response);
+    void handleLogin(const Rest::Request &request, Http::ResponseWriter response);
+    void handleGetUsers(const Rest::Request &request, Http::ResponseWriter response);
+    void handleGetUserById(const Rest::Request &request, Http::ResponseWriter response);
+    void handleUpdateUser(const Rest::Request &request, Http::ResponseWriter response);
+    void handleDeleteUser(const Rest::Request &request, Http::ResponseWriter response);
 
-    std::shared_ptr<Pistache::Http::Endpoint> httpEndpoint;
-    Pistache::Rest::Router router;
+    bool isAuthorized(const string &token, const string &requiredRole);
+
+    shared_ptr<Http::Endpoint> httpEndpoint;
+    Rest::Router router;
     Database database;
 };
 
